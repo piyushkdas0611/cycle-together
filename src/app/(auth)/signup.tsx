@@ -15,6 +15,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../../services/firebase";
+import { createUserProfile } from "../../features/profile/profileService";
 
 export default function SignupScreen() {
   const [name, setName] = useState("");
@@ -39,19 +40,29 @@ export default function SignupScreen() {
     try {
       setLoading(true);
 
+      const normalizedEmail = email.trim().toLowerCase();
+      const displayName = name.trim();
+
       const credential = await createUserWithEmailAndPassword(
         auth,
-        email.trim(),
+        normalizedEmail,
         password
       );
 
       await updateProfile(credential.user, {
-        displayName: name.trim(),
+        displayName,
       });
 
-      router.replace("/");
+      // Save the user's basic profile in Firestore.
+      await createUserProfile(
+        credential.user.uid,
+        displayName,
+        credential.user.email ?? normalizedEmail
+      );
 
+      router.replace("/");
     } catch (error: any) {
+      const errorCode = error?.code ?? "unknown";
       const messages: Record<string, string> = {
         "auth/email-already-in-use":
           "An account with this email already exists.",
@@ -59,11 +70,14 @@ export default function SignupScreen() {
         "auth/weak-password": "Please choose a stronger password.",
         "auth/network-request-failed":
           "Network error. Please check your connection.",
+        "permission-denied":
+          "Unable to save your profile. Please check your Firestore security rules.",
       };
 
       Alert.alert(
         "Sign-up failed",
-        messages[error.code] ?? "Something went wrong. Please try again."
+        messages[errorCode] ??
+          `Something went wrong (${errorCode}). Please try again.`,
       );
     } finally {
       setLoading(false);

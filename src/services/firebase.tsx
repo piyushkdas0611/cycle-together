@@ -1,7 +1,11 @@
 
 import { getApp, getApps, initializeApp } from "firebase/app";
 import {
+  getAuth,
   initializeAuth,
+  // The React Native platform entry exports this API, but Firebase's shared
+  // TypeScript declarations currently omit it.
+  // @ts-expect-error React Native Firebase Auth platform export
   getReactNativePersistence,
 } from 'firebase/auth';
 import  ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
