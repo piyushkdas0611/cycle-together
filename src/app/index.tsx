@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useAuth } from "../features/auth/AuthContext";
 
 export default function WelcomeScreen() {
@@ -15,7 +15,7 @@ export default function WelcomeScreen() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/(tab)");
+      router.replace("/(tab)/home" as Href);
     }
   }, [user, loading]);
 

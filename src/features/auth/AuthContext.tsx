@@ -1,14 +1,14 @@
 import {
-    onAuthStateChanged,
-    signOut,
-    type User,
+  onAuthStateChanged,
+  signOut,
+  type User,
 } from "firebase/auth";
 import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
 } from "react";
 import { auth } from "../../services/firebase";
 
@@ -37,6 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     await signOut(auth);
+    // Update context before callers navigate so the welcome screen does not
+    // see a stale authenticated user and redirect back into the tabs.
+    setUser(null);
   };
 
   return (

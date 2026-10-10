@@ -68,7 +68,6 @@ async function handleLogout() {
   try {
     setLoggingOut(true);
     await logout();
-    router.replace("/");
   } catch (error) {
     console.error("Logout failed:", error);
     Alert.alert("Logout failed", "Please try again.");
